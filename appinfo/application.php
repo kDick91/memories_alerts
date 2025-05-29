@@ -58,11 +58,18 @@ class Application extends App implements IBootstrap {
     }
 
     public function boot(IBootContext $context): void {
-        $jobList = $context->getServerContainer()->get(IJobList::class);
-        $jobList->add(SendDailyAlerts::class);
+        try {
+            $jobList = $context->getServerContainer()->get(IJobList::class);
+            $jobList->add(SendDailyAlerts::class);
 
-        // Initialize logger and log during boot
-        $this->logger = $context->getServerContainer()->get(LoggerInterface::class);
-        $this->logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
+            // Initialize logger and log during boot
+            $logger = $context->getServerContainer()->get(LoggerInterface::class);
+            $logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
+            $this->logger = $logger; // Assign to property after successful initialization
+        } catch (\Exception $e) {
+            // Log the error to a file manually since logger might not be available
+            file_put_contents('/tmp/memories_alerts_boot_error.log', "Boot error: " . $e->getMessage() . "\n", FILE_APPEND);
+            throw $e; // Re-throw to ensure Nextcloud logs the error
+        }
     }
 }
