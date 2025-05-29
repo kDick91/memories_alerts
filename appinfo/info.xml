@@ -10,6 +10,10 @@
     <dependencies>
         <nextcloud min-version="31" />
         <php min-version="8.3" />
-        <app id="memories" />
     </dependencies>
+    <navigation>
+        <route>memories_alerts.settings.index</route>
+        <name>Memories Alerts Settings</name>
+        <order>10</order>
+    </navigation>
 </info>
