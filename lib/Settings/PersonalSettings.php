@@ -1,10 +1,10 @@
 <?php
-namespace OCA\MemoriesAlerts\Settings;
+namespace OCA\Memories_alerts\Settings; // Updated namespace
 
 use OCP\Settings\IIconSection;
 use OCP\IURLGenerator;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCA\MemoriesAlerts\Controller\SettingsController;
+use OCA\Memories_alerts\Controller\SettingsController; // Updated namespace
 
 class PersonalSettings implements IIconSection {
     private $controller;

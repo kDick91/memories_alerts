@@ -6,7 +6,7 @@
     <version>0.1.0</version>
     <licence>agpl</licence>
     <author>Kyle Dickson</author>
-    <namespace>MemoriesAlerts</namespace>
+    <namespace>Memories_alerts</namespace>
     <dependencies>
         <nextcloud min-version="31" />
         <php min-version="8.3" />

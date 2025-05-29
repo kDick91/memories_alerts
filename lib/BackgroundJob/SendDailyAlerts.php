@@ -1,12 +1,12 @@
 <?php
-namespace OCA\MemoriesAlerts\BackgroundJob;
+namespace OCA\Memories_alerts\BackgroundJob; // Updated namespace
 
-use OCP\BackgroundJob\IJobList; // Added for job list
+use OCP\BackgroundJob\IJobList;
 use OCP\BackgroundJob\TimedJob;
 use OCP\IUserManager;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
-use OCA\MemoriesAlerts\Service\AlertService;
+use OCA\Memories_alerts\Service\AlertService; // Updated namespace
 
 class SendDailyAlerts extends TimedJob {
     private $alertService;
@@ -15,13 +15,13 @@ class SendDailyAlerts extends TimedJob {
     private $logger;
 
     public function __construct(
-        IJobList $jobList, // Added parameter
+        IJobList $jobList,
         AlertService $alertService,
         IUserManager $userManager,
         IConfig $config,
         LoggerInterface $logger
     ) {
-        parent::__construct($jobList); // Pass jobList to parent
+        parent::__construct($jobList);
         $this->alertService = $alertService;
         $this->userManager = $userManager;
         $this->config = $config;

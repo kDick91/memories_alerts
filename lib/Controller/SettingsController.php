@@ -1,5 +1,5 @@
 <?php
-namespace OCA\MemoriesAlerts\Controller;
+namespace OCA\Memories_alerts\Controller; // Updated namespace
 
 use OCP\AppFramework\Controller;
 use OCP\IRequest;

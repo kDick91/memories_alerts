@@ -1,5 +1,5 @@
 <?php
-namespace OCA\MemoriesAlerts\Service;
+namespace OCA\Memories_alerts\Service; // Updated namespace
 
 use OCP\IDBConnection;
 use OCP\Mail\IMailer;
@@ -91,7 +91,7 @@ class AlertService {
 
             $message = $this->mailer->createMessage();
             $message->setSubject('New Files Added to Memories Album');
-            $fromAddress = $this->config->getSystemValue('fromaddress', 'no-reply@yourdomain.com'); // Updated to use IConfig
+            $fromAddress = $this->config->getSystemValue('fromaddress', 'no-reply@yourdomain.com');
             $message->setFrom([$fromAddress => 'Nextcloud']);
             $message->setTo([$email]);
             $message->setPlainBody($body);
