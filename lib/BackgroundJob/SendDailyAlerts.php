@@ -14,11 +14,19 @@ class SendDailyAlerts extends TimedJob {
     }
 
     protected function run($argument) {
-        $currentTime = date('H:i');
-        $userTime = \OC::$server->getConfig()->getUserValue(\OC::$server->getUserSession()->getUser()->getUID(), 'memories_alerts', 'alert_time', '23:59');
+        // Get all users
+        $userManager = \OC::$server->getUserManager();
+        $users = $userManager->search('');
+        foreach ($users as $user) {
+            $userId = $user->getUID();
+            $currentTime = date('H:i');
+            $config = \OC::$server->getConfig();
+            $userTime = $config->getUserValue($userId, 'memories_alerts', 'alert_time', '23:59');
 
-        if ($currentTime === $userTime) {
-            $this->alertService->sendDailyAlerts();
+            if ($currentTime === $userTime) {
+                $this->alertService->sendDailyAlerts();
+                break; // Run once per minute to avoid duplicate emails
+            }
         }
     }
 }

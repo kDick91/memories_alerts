@@ -5,3 +5,13 @@
  * @return void
  */
 function p($value) {}
+
+/**
+ * Stub for Nextcloud's OC class
+ */
+class OC {
+    /**
+     * @var \OC\Server
+     */
+    public static $server;
+}
