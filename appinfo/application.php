@@ -6,10 +6,12 @@ use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\BackgroundJob\IJobList;
+use OCP\Settings\IManager as ISettingsManager;
 use Psr\Log\LoggerInterface;
 use OCA\MemoriesAlerts\Service\AlertService;
 use OCA\MemoriesAlerts\BackgroundJob\SendDailyAlerts;
 use OCA\MemoriesAlerts\Controller\SettingsController;
+use OCA\MemoriesAlerts\Settings\PersonalSettings;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'memories_alerts';
@@ -55,6 +57,14 @@ class Application extends App implements IBootstrap {
                 $c->getServer()->getNavigationManager()
             );
         });
+
+        // Register the PersonalSettings
+        $context->registerService(PersonalSettings::class, function ($c) {
+            return new PersonalSettings(
+                $c->get(SettingsController::class),
+                $c->getServer()->getURLGenerator()
+            );
+        });
     }
 
     public function boot(IBootContext $context): void {
@@ -65,11 +75,14 @@ class Application extends App implements IBootstrap {
             // Initialize logger and log during boot
             $logger = $context->getServerContainer()->get(LoggerInterface::class);
             $logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
-            $this->logger = $logger; // Assign to property after successful initialization
+            $this->logger = $logger;
+
+            // Register the personal settings
+            $settingsManager = $context->getServerContainer()->get(ISettingsManager::class);
+            $settingsManager->registerSetting('personal', PersonalSettings::class);
         } catch (\Exception $e) {
-            // Log the error to a file manually since logger might not be available
             file_put_contents('/tmp/memories_alerts_boot_error.log', "Boot error: " . $e->getMessage() . "\n", FILE_APPEND);
-            throw $e; // Re-throw to ensure Nextcloud logs the error
+            throw $e;
         }
     }
 }
