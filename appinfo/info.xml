@@ -10,8 +10,6 @@
     <dependencies>
         <nextcloud min-version="31" />
         <php min-version="8.3" />
+        <app id="memories" />
     </dependencies>
-    <settings>
-        <personal>OCA\MemoriesAlerts\Controller\SettingsController::index</personal>
-    </settings>
 </info>
