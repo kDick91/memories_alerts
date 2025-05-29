@@ -7,19 +7,30 @@ use OCP\IDBConnection;
 use OCP\IConfig;
 use OCP\IUserSession;
 use OCP\Mail\IMailer;
+use Psr\Log\LoggerInterface;
 
 class SettingsController extends Controller {
     private $db;
     private $config;
     private $userSession;
     private $mailer;
+    private $logger;
 
-    public function __construct($appName, IRequest $request, IDBConnection $db, IConfig $config, IUserSession $userSession, IMailer $mailer) {
+    public function __construct(
+        $appName,
+        IRequest $request,
+        IDBConnection $db,
+        IConfig $config,
+        IUserSession $userSession,
+        IMailer $mailer,
+        LoggerInterface $logger
+    ) {
         parent::__construct($appName, $request);
         $this->db = $db;
         $this->config = $config;
         $this->userSession = $userSession;
         $this->mailer = $mailer;
+        $this->logger = $logger;
     }
 
     /**
@@ -27,27 +38,39 @@ class SettingsController extends Controller {
      * @NoCSRFRequired
      */
     public function index() {
+        $this->logger->info("Memories Alerts settings page accessed", ['app' => 'memories_alerts']);
+
         $userId = $this->userSession->getUser()->getUID();
+        $albums = [];
 
-        // Get albums owned by the user
-        /** @var \Doctrine\DBAL\Statement $ownedQuery */
-        $ownedQuery = $this->db->prepare("SELECT album_id, name FROM oc_memories_albums WHERE user = ?");
-        $ownedQuery->execute([$userId]);
-        $ownedAlbums = $ownedQuery->fetchAllAssociative();
+        try {
+            // Get albums owned by the user
+            /** @var \Doctrine\DBAL\Statement $ownedQuery */
+            $ownedQuery = $this->db->prepare("SELECT album_id, name FROM oc_memories_albums WHERE user = ?");
+            $ownedQuery->execute([$userId]);
+            $ownedAlbums = $ownedQuery->fetchAllAssociative();
+        } catch (\Exception $e) {
+            $this->logger->error("Failed to fetch owned albums: " . $e->getMessage(), ['app' => 'memories_alerts']);
+            $ownedAlbums = [];
+        }
 
-        // Get albums shared with the user
-        /** @var \Doctrine\DBAL\Statement $sharedQuery */
-        $sharedQuery = $this->db->prepare("
-            SELECT a.album_id, a.name
-            FROM oc_share s
-            JOIN oc_memories_albums a ON s.item_source = a.album_id
-            WHERE s.item_type = 'memories/album' AND s.share_with = ?
-        ");
-        $sharedQuery->execute([$userId]);
-        $sharedAlbums = $sharedQuery->fetchAllAssociative();
+        try {
+            // Get albums shared with the user
+            /** @var \Doctrine\DBAL\Statement $sharedQuery */
+            $sharedQuery = $this->db->prepare("
+                SELECT a.album_id, a.name
+                FROM oc_share s
+                JOIN oc_memories_albums a ON s.item_source = a.album_id
+                WHERE s.item_type = 'memories/album' AND s.share_with = ?
+            ");
+            $sharedQuery->execute([$userId]);
+            $sharedAlbums = $sharedQuery->fetchAllAssociative();
+        } catch (\Exception $e) {
+            $this->logger->error("Failed to fetch shared albums: " . $e->getMessage(), ['app' => 'memories_alerts']);
+            $sharedAlbums = [];
+        }
 
         // Combine and deduplicate albums
-        $albums = [];
         $albumIds = [];
         foreach (array_merge($ownedAlbums, $sharedAlbums) as $album) {
             if (!in_array($album['album_id'], $albumIds)) {
@@ -118,7 +141,8 @@ class SettingsController extends Controller {
         try {
             $message = $this->mailer->createMessage();
             $message->setSubject('Test Alert from Memories Alerts');
-            $message->setFrom([\OC::$server->getConfig()->getSystemValue('fromaddress', 'no-reply@yourdomain.com') => 'Nextcloud']);
+            $fromAddress = $this->config->getSystemValue('fromaddress', 'no-reply@yourdomain.com');
+            $message->setFrom([$fromAddress => 'Nextcloud']);
             $message->setTo([$emailResult]);
             $message->setPlainBody("This is a test alert from the Memories Alerts app.");
             $this->mailer->send($message);

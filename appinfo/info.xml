@@ -5,15 +5,13 @@
     <description>Daily alerts for new files in Memories shared albums</description>
     <version>0.1.0</version>
     <licence>agpl</licence>
-    <author>Your Name</author>
+    <author>Kyle Dickson</author>
     <namespace>MemoriesAlerts</namespace>
-    <types>
-        <filesystem/>
-    </types>
+    <dependencies>
+        <nextcloud min-version="31" />
+        <php min-version="8.3" />
+    </dependencies>
     <settings>
         <personal>OCA\MemoriesAlerts\Controller\SettingsController::index</personal>
     </settings>
-    <background-jobs>
-        <job>OCA\MemoriesAlerts\BackgroundJob\SendDailyAlerts</job>
-    </background-jobs>
 </info>

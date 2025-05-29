@@ -1,91 +1,67 @@
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
+(function (OC, window, $, undefined) {
+    'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize time picker
-    flatpickr("#alert_time", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true
-    });
-
-    // Save alert time
-    const timeInput = document.getElementById('alert_time');
-    timeInput.addEventListener('change', () => {
-        fetch(OC.generateUrl('/apps/memories_alerts/settings/save-time'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ time: timeInput.value })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showMessage('Alert time saved!', 'success');
-            } else {
-                showMessage('Error saving alert time: ' + (data.error || 'Unknown error'), 'error');
-            }
-        })
-        .catch(error => showMessage('Network error: ' + error, 'error'));
-    });
-
-    // Handle album tick boxes
-    document.querySelectorAll('.album-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const albumId = checkbox.getAttribute('data-album-id');
-            fetch(OC.generateUrl('/apps/memories_alerts/settings/save-alert'), {
+    $(document).ready(function () {
+        // Save alert time when the input changes
+        $('#alert_time').on('change', function () {
+            var time = $(this).val();
+            $.ajax({
+                url: OC.generateUrl('/apps/memories_alerts/settings/save-time'),
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    albumId: albumId,
-                    enabled: checkbox.checked
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showMessage('Alert settings saved for album ' + albumId, 'success');
-                } else {
-                    showMessage('Error saving alert settings: ' + (data.error || 'Unknown error'), 'error');
+                data: { time: time },
+                success: function (response) {
+                    if (response.success) {
+                        OC.Notification.showTemporary('Alert time saved successfully');
+                    } else {
+                        OC.Notification.showTemporary('Error saving alert time: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function () {
+                    OC.Notification.showTemporary('Failed to save alert time');
                 }
-            })
-            .catch(error => showMessage('Network error: ' + error, 'error'));
+            });
+        });
+
+        // Toggle album alert settings
+        $('.album-checkbox').on('change', function () {
+            var albumId = $(this).data('album-id');
+            var enabled = $(this).is(':checked');
+            $.ajax({
+                url: OC.generateUrl('/apps/memories_alerts/settings/save-alert'),
+                method: 'POST',
+                data: {
+                    albumId: albumId,
+                    enabled: enabled
+                },
+                success: function (response) {
+                    if (response.success) {
+                        OC.Notification.showTemporary('Alert settings updated for album ' + albumId);
+                    } else {
+                        OC.Notification.showTemporary('Error updating alert settings: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function () {
+                    OC.Notification.showTemporary('Failed to update alert settings');
+                }
+            });
+        });
+
+        // Send test alert
+        $('#test_alert_button').on('click', function () {
+            $.ajax({
+                url: OC.generateUrl('/apps/memories_alerts/settings/send-test-alert'),
+                method: 'POST',
+                success: function (response) {
+                    if (response.success) {
+                        OC.Notification.showTemporary('Test alert sent successfully');
+                    } else {
+                        OC.Notification.showTemporary('Error sending test alert: ' + (response.error || 'Unknown error'));
+                    }
+                },
+                error: function () {
+                    OC.Notification.showTemporary('Failed to send test alert');
+                }
+            });
         });
     });
-
-    // Handle test alert button
-    const testAlertButton = document.getElementById('test_alert_button');
-    testAlertButton.addEventListener('click', () => {
-        testAlertButton.disabled = true;
-        testAlertButton.textContent = 'Sending...';
-        
-        fetch(OC.generateUrl('/apps/memories_alerts/settings/send-test-alert'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        })
-        .then(response => response.json())
-        .then(data => {
-            testAlertButton.disabled = false;
-            testAlertButton.textContent = 'Send Test Alert';
-            if (data.success) {
-                showMessage(data.message, 'success');
-            } else {
-                showMessage('Error: ' + (data.error || 'Unknown error'), 'error');
-            }
-        })
-        .catch(error => {
-            testAlertButton.disabled = false;
-            testAlertButton.textContent = 'Send Test Alert';
-            showMessage('Network error: ' + error, 'error');
-        });
-    });
-
-    // Helper function to show messages
-    function showMessage(message, type) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `alert-message ${type}`;
-        msgDiv.textContent = message;
-        document.querySelector('#memories_alerts').prepend(msgDiv);
-        setTimeout(() => msgDiv.remove(), 3000);
-    }
-});
+})(OC, window, jQuery);

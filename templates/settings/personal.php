@@ -2,13 +2,6 @@
 /** @var array $_['albums'] */
 /** @var string $_['alert_time'] */
 
-/**
- * Escapes a string for safe output in HTML.
- * @param string $value The value to escape
- * @return void
- */
-function p($value) {}
-
 // Load JavaScript and CSS for the settings panel
 \OCP\Util::addScript('memories_alerts', 'settings');
 \OCP\Util::addStyle('memories_alerts', 'settings');
@@ -19,7 +12,7 @@ function p($value) {}
     <div class="settings-section">
         <label>
             Daily Alert Time:
-            <input type="time" id="alert_time" value="<?php p($_['alert_time']); ?>">
+            <input type="time" id="alert_time" value="<?php echo htmlspecialchars($_['alert_time'], ENT_QUOTES, 'UTF-8'); ?>">
         </label>
         <button id="test_alert_button">Send Test Alert</button>
     </div>
@@ -31,11 +24,11 @@ function p($value) {}
             <?php foreach ($_['albums'] as $album): ?>
                 <li class="album-item">
                     <input type="checkbox" 
-                           id="alert_<?php p($album['album_id']); ?>" 
+                           id="alert_<?php echo htmlspecialchars($album['album_id'], ENT_QUOTES, 'UTF-8'); ?>" 
                            class="album-checkbox"
-                           data-album-id="<?php p($album['album_id']); ?>"
-                           <?php if ($album['alert_enabled']) p('checked'); ?>>
-                    <label><?php p($album['name']); ?> (ID: <?php p($album['album_id']); ?>)</label>
+                           data-album-id="<?php echo htmlspecialchars($album['album_id'], ENT_QUOTES, 'UTF-8'); ?>"
+                           <?php echo $album['alert_enabled'] ? 'checked' : ''; ?>>
+                    <label><?php echo htmlspecialchars($album['name'], ENT_QUOTES, 'UTF-8'); ?> (ID: <?php echo htmlspecialchars($album['album_id'], ENT_QUOTES, 'UTF-8'); ?>)</label>
                 </li>
             <?php endforeach; ?>
         </ul>
