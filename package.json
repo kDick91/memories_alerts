@@ -1,0 +1,28 @@
+{
+  "name": "memories_alerts",
+  "version": "1.0.0",
+  "description": "Email notification for Nextcloud app for Memories shared albums",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild js/settings.js --bundle --outfile=js/settings.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kDick91/memories_alerts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kDick91/memories_alerts/issues"
+  },
+  "homepage": "https://github.com/kDick91/memories_alerts#readme",
+  "dependencies": {
+    "esbuild": "^0.25.5",
+    "flatpickr": "^4.6.13"
+  }
+}

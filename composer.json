@@ -1,0 +1,16 @@
+{
+    "name": "kdick91/memories_alerts",
+    "description": "Nextcloud app for daily alerts on Memories shared albums",
+    "require": {
+        "php": "^8.1",
+        "ext-pdo": "*"
+    },
+    "require-dev": {
+    "nextcloud/ocp": "dev-master"
+},
+    "autoload": {
+        "psr-4": {
+            "OCA\\MemoriesAlerts\\": "lib/"
+        }
+    }
+}

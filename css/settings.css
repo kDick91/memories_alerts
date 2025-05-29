@@ -1,0 +1,83 @@
+#memories_alerts {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#memories_alerts h2 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #1a1a1a;
+}
+
+#memories_alerts h3 {
+    font-size: 1.2em;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#memories_alerts .album {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+#memories_alerts .album h4 {
+    font-size: 1.1em;
+    margin: 0 0 10px 0;
+    color: #0052cc;
+}
+
+#memories_alerts ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#memories_alerts li {
+    padding: 5px 0;
+    display: flex;
+    align-items: center;
+}
+
+#memories_alerts input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#memories_alerts label {
+    font-size: 1em;
+    color: #333;
+}
+
+#memories_alerts input[type="time"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    margin-left: 10px;
+}
+
+#memories_alerts input[type="time"]:focus {
+    border-color: #0052cc;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 82, 204, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #memories_alerts {
+        padding: 10px;
+    }
+
+    #memories_alerts h2 {
+        font-size: 1.3em;
+    }
+
+    #memories_alerts .album {
+        padding: 10px;
+    }
+}

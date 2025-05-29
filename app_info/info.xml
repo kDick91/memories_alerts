@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<info>
+    <id>memories_alerts</id>
+    <name>Memories Alerts</name>
+    <description>Daily alerts for new files in Memories shared albums</description>
+    <version>0.1.0</version>
+    <licence>agpl</licence>
+    <author>Your Name</author>
+    <namespace>MemoriesAlerts</namespace>
+    <types>
+        <filesystem/>
+    </types>
+    <settings>
+        <personal>OCA\MemoriesAlerts\Controller\SettingsController::index</personal>
+    </settings>
+    <background-jobs>
+        <job>OCA\MemoriesAlerts\BackgroundJob\SendDailyAlerts</job>
+    </background-jobs>
+</info>
