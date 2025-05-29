@@ -43,9 +43,9 @@ class SettingsController extends Controller {
      * @NoCSRFRequired
      */
     public function index() {
-        $this->logger->info("Memories Alerts settings page accessed", ['app' => 'memories_alerts']);
+        $userId = $this->userSession->getUser() ? $this->userSession->getUser()->getUID() : 'unknown';
+        $this->logger->info("Memories Alerts settings page accessed by user: $userId", ['app' => 'memories_alerts']);
 
-        $userId = $this->userSession->getUser()->getUID();
         $albums = [];
 
         try {
@@ -55,7 +55,7 @@ class SettingsController extends Controller {
             $ownedQuery->execute([$userId]);
             $ownedAlbums = $ownedQuery->fetchAllAssociative();
         } catch (\Exception $e) {
-            $this->logger->error("Failed to fetch owned albums: " . $e->getMessage(), ['app' => 'memories_alerts']);
+            $this->logger->error("Failed to fetch owned albums for user $userId: " . $e->getMessage(), ['app' => 'memories_alerts']);
             $ownedAlbums = [];
         }
 
@@ -71,7 +71,7 @@ class SettingsController extends Controller {
             $sharedQuery->execute([$userId]);
             $sharedAlbums = $sharedQuery->fetchAllAssociative();
         } catch (\Exception $e) {
-            $this->logger->error("Failed to fetch shared albums: " . $e->getMessage(), ['app' => 'memories_alerts']);
+            $this->logger->error("Failed to fetch shared albums for user $userId: " . $e->getMessage(), ['app' => 'memories_alerts']);
             $sharedAlbums = [];
         }
 
@@ -109,11 +109,14 @@ class SettingsController extends Controller {
      * @NoAdminRequired
      */
     public function saveTime() {
+        $userId = $this->userSession->getUser()->getUID();
         $time = $this->request->getParam('time');
         if (preg_match('/^\d{2}:\d{2}$/', $time)) {
-            $this->config->setUserValue($this->userSession->getUser()->getUID(), 'memories_alerts', 'alert_time', $time);
+            $this->config->setUserValue($userId, 'memories_alerts', 'alert_time', $time);
+            $this->logger->info("Alert time saved for user $userId: $time", ['app' => 'memories_alerts']);
             return new \OCP\AppFramework\Http\JSONResponse(['success' => true]);
         }
+        $this->logger->warning("Invalid alert time format for user $userId: $time", ['app' => 'memories_alerts']);
         return new \OCP\AppFramework\Http\JSONResponse(['error' => 'Invalid time'], 400);
     }
 
@@ -121,14 +124,17 @@ class SettingsController extends Controller {
      * @NoAdminRequired
      */
     public function saveAlert() {
+        $userId = $this->userSession->getUser()->getUID();
         $albumId = $this->request->getParam('albumId');
         $enabled = $this->request->getParam('enabled') ? '1' : '0';
 
         if (!is_numeric($albumId)) {
+            $this->logger->warning("Invalid album ID for user $userId: $albumId", ['app' => 'memories_alerts']);
             return new \OCP\AppFramework\Http\JSONResponse(['error' => 'Invalid album ID'], 400);
         }
 
-        $this->config->setUserValue($this->userSession->getUser()->getUID(), 'memories_alerts', "album_{$albumId}_enabled", $enabled);
+        $this->config->setUserValue($userId, 'memories_alerts', "album_{$albumId}_enabled", $enabled);
+        $this->logger->info("Alert setting saved for user $userId, album $albumId: enabled=$enabled", ['app' => 'memories_alerts']);
         return new \OCP\AppFramework\Http\JSONResponse(['success' => true]);
     }
 
@@ -149,6 +155,7 @@ class SettingsController extends Controller {
         $emailResult = $emailQuery->fetchOne();
 
         if (!$emailResult) {
+            $this->logger->warning("No email address configured for user $userId", ['app' => 'memories_alerts']);
             return new \OCP\AppFramework\Http\JSONResponse(['error' => 'No email address configured'], 400);
         }
 
@@ -161,8 +168,10 @@ class SettingsController extends Controller {
             $message->setTo([$emailResult]);
             $message->setPlainBody("This is a test alert from the Memories Alerts app.");
             $this->mailer->send($message);
+            $this->logger->info("Test alert sent to $emailResult for user $userId", ['app' => 'memories_alerts']);
             return new \OCP\AppFramework\Http\JSONResponse(['success' => true, 'message' => 'Test alert sent']);
         } catch (\Exception $e) {
+            $this->logger->error("Failed to send test alert for user $userId: " . $e->getMessage(), ['app' => 'memories_alerts']);
             return new \OCP\AppFramework\Http\JSONResponse(['error' => 'Failed to send test alert: ' . $e->getMessage()], 500);
         }
     }

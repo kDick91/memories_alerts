@@ -14,13 +14,4 @@
     <settings>
         <personal>OCA\MemoriesAlerts\Controller\SettingsController::index</personal>
     </settings>
-    <navigations>
-        <navigation>
-            <id>memories_alerts_settings</id>
-            <name>Memories Alerts Settings</name>
-            <route>memories_alerts.settings.index</route>
-            <order>10</order>
-            <icon>app</icon> <!-- Added icon field -->
-        </navigation>
-    </navigations>
 </info>
