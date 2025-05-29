@@ -14,6 +14,8 @@ use OCA\MemoriesAlerts\Controller\SettingsController;
 class Application extends App implements IBootstrap {
     public const APP_ID = 'memories_alerts';
 
+    private $logger;
+
     public function __construct() {
         parent::__construct(self::APP_ID);
     }
@@ -49,7 +51,8 @@ class Application extends App implements IBootstrap {
                 $c->getServer()->getConfig(),
                 $c->getServer()->getUserSession(),
                 $c->getServer()->getMailer(),
-                $c->getServer()->get(LoggerInterface::class)
+                $c->getServer()->get(LoggerInterface::class),
+                $c->getServer()->getNavigationManager()
             );
         });
     }
@@ -57,5 +60,9 @@ class Application extends App implements IBootstrap {
     public function boot(IBootContext $context): void {
         $jobList = $context->getServerContainer()->get(IJobList::class);
         $jobList->add(SendDailyAlerts::class);
+
+        // Initialize logger and log during boot
+        $this->logger = $context->getServerContainer()->get(LoggerInterface::class);
+        $this->logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
     }
 }

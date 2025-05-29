@@ -7,6 +7,7 @@ use OCP\IDBConnection;
 use OCP\IConfig;
 use OCP\IUserSession;
 use OCP\Mail\IMailer;
+use OCP\INavigationManager;
 use Psr\Log\LoggerInterface;
 
 class SettingsController extends Controller {
@@ -15,6 +16,7 @@ class SettingsController extends Controller {
     private $userSession;
     private $mailer;
     private $logger;
+    private $navigationManager;
 
     public function __construct(
         $appName,
@@ -23,7 +25,8 @@ class SettingsController extends Controller {
         IConfig $config,
         IUserSession $userSession,
         IMailer $mailer,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        INavigationManager $navigationManager
     ) {
         parent::__construct($appName, $request);
         $this->db = $db;
@@ -31,6 +34,8 @@ class SettingsController extends Controller {
         $this->userSession = $userSession;
         $this->mailer = $mailer;
         $this->logger = $logger;
+        $this->navigationManager = $navigationManager;
+        $this->logger->info("SettingsController constructed for app: $appName", ['app' => 'memories_alerts']);
     }
 
     /**
@@ -88,6 +93,16 @@ class SettingsController extends Controller {
             'albums' => $albums,
             'alert_time' => $alertTime
         ]);
+    }
+
+    /**
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     */
+    public function debugNavigation() {
+        $navEntries = $this->navigationManager->getAll();
+        $this->logger->info("Navigation entries: " . json_encode($navEntries), ['app' => 'memories_alerts']);
+        return new \OCP\AppFramework\Http\JSONResponse($navEntries);
     }
 
     /**

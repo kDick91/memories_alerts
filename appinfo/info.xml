@@ -11,9 +11,15 @@
         <nextcloud min-version="31" />
         <php min-version="8.3" />
     </dependencies>
-    <navigation>
-        <route>memories_alerts.settings.index</route>
-        <name>Memories Alerts Settings</name>
-        <order>10</order>
-    </navigation>
+    <settings>
+        <personal>OCA\MemoriesAlerts\Controller\SettingsController::index</personal>
+    </settings>
+    <navigations>
+        <navigation>
+            <id>memories_alerts_settings</id>
+            <name>Memories Alerts Settings</name>
+            <route>memories_alerts.settings.index</route>
+            <order>10</order>
+        </navigation>
+    </navigations>
 </info>

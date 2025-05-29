@@ -8,6 +8,11 @@ return [
             'verb' => 'GET',
         ],
         [
+            'name' => 'settings#debugNavigation',
+            'url' => '/settings/debug-navigation',
+            'verb' => 'GET',
+        ],
+        [
             'name' => 'settings#saveTime',
             'url' => '/settings/save-time',
             'verb' => 'POST',
