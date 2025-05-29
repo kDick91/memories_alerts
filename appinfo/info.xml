@@ -20,6 +20,7 @@
             <name>Memories Alerts Settings</name>
             <route>memories_alerts.settings.index</route>
             <order>10</order>
+            <icon>app</icon> <!-- Added icon field -->
         </navigation>
     </navigations>
 </info>
