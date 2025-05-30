@@ -1,5 +1,5 @@
 <?php
-namespace OCA\Memories_alerts; // Updated namespace
+// No namespace declaration
 
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -8,10 +8,10 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\BackgroundJob\IJobList;
 use OCP\Settings\IManager as ISettingsManager;
 use Psr\Log\LoggerInterface;
-use OCA\Memories_alerts\Service\AlertService; // Updated namespace
-use OCA\Memories_alerts\BackgroundJob\SendDailyAlerts; // Updated namespace
-use OCA\Memories_alerts\Controller\SettingsController; // Updated namespace
-use OCA\Memories_alerts\Settings\PersonalSettings; // Updated namespace
+use OCA\Memories_alerts\Service\AlertService;
+use OCA\Memories_alerts\BackgroundJob\SendDailyAlerts;
+use OCA\Memories_alerts\Controller\SettingsController;
+use OCA\Memories_alerts\Settings\PersonalSettings;
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'memories_alerts';
