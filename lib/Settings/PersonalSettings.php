@@ -1,39 +1,26 @@
 <?php
-namespace OCA\Memories_alerts\Settings; // Updated namespace
+namespace OCA\Memories_alerts\Settings;
 
-use OCP\Settings\IIconSection;
-use OCP\IURLGenerator;
+use OCP\Settings\ISettings;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCA\Memories_alerts\Controller\SettingsController; // Updated namespace
+use OCA\Memories_alerts\Controller\SettingsController;
 
-class PersonalSettings implements IIconSection {
+class PersonalSettings implements ISettings {
     private $controller;
-    private $urlGenerator;
 
-    public function __construct(SettingsController $controller, IURLGenerator $urlGenerator) {
+    public function __construct(SettingsController $controller) {
         $this->controller = $controller;
-        $this->urlGenerator = $urlGenerator;
     }
 
-    public function getId(): string {
+    public function getForm(): TemplateResponse {
+        return $this->controller->index();
+    }
+
+    public function getSection(): string {
         return 'memories_alerts';
-    }
-
-    public function getName(): string {
-        return 'Memories Alerts';
     }
 
     public function getPriority(): int {
         return 10;
-    }
-
-    public function getIcon(): string {
-        // Use the app's icon, which we know exists
-        return $this->urlGenerator->imagePath('memories_alerts', 'app.svg');
-    }
-
-    // Helper method to render the form
-    public function getForm(): TemplateResponse {
-        return $this->controller->index();
     }
 }

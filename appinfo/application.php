@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use OCA\Memories_alerts\Service\AlertService;
 use OCA\Memories_alerts\BackgroundJob\SendDailyAlerts;
 use OCA\Memories_alerts\Controller\SettingsController;
+use OCA\Memories_alerts\Settings\MemoriesAlertsSection; // Added
 use OCA\Memories_alerts\Settings\PersonalSettings;
 
 class Application extends App implements IBootstrap {
@@ -58,11 +59,17 @@ class Application extends App implements IBootstrap {
             );
         });
 
+        // Register the MemoriesAlertsSection
+        $context->registerService(MemoriesAlertsSection::class, function ($c) {
+            return new MemoriesAlertsSection(
+                $c->getServer()->getURLGenerator()
+            );
+        });
+
         // Register the PersonalSettings
         $context->registerService(PersonalSettings::class, function ($c) {
             return new PersonalSettings(
-                $c->get(SettingsController::class),
-                $c->getServer()->getURLGenerator()
+                $c->get(SettingsController::class)
             );
         });
     }
@@ -77,8 +84,9 @@ class Application extends App implements IBootstrap {
             $logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
             $this->logger = $logger;
 
-            // Register the personal settings
+            // Register the personal section and settings
             $settingsManager = $context->getServerContainer()->get(ISettingsManager::class);
+            $settingsManager->registerSection('personal', MemoriesAlertsSection::class);
             $settingsManager->registerSetting('personal', PersonalSettings::class);
         } catch (\Exception $e) {
             file_put_contents('/tmp/memories_alerts_boot_error.log', "Boot error: " . $e->getMessage() . "\n", FILE_APPEND);
