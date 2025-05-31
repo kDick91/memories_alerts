@@ -1,5 +1,5 @@
 <?php
-// No namespace declaration
+namespace OCA\Memories_alerts\AppInfo;
 
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
