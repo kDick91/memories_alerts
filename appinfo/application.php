@@ -1,5 +1,5 @@
 <?php
-// No namespace declaration (correct for appinfo/application.php)
+// No namespace declaration
 
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -8,12 +8,11 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\BackgroundJob\IJobList;
 use OCP\Settings\IManager as ISettingsManager;
 use Psr\Log\LoggerInterface;
-// Import your app's classes
 use OCA\Memories_alerts\Service\AlertService;
 use OCA\Memories_alerts\BackgroundJob\SendDailyAlerts;
 use OCA\Memories_alerts\Controller\SettingsController;
-use OCA\Memories_alerts\Settings\MemoriesAlertsSection;
-use OCA\Memories_alerts\Settings\PersonalSettings;
+use OCA\Memories_alerts\Settings\MemoriesAlertsSection; // New section class
+use OCA\Memories_alerts\Settings\MemoriesAlertsSettings; // New settings class
 
 class Application extends App implements IBootstrap {
     public const APP_ID = 'memories_alerts';
@@ -67,9 +66,9 @@ class Application extends App implements IBootstrap {
             );
         });
 
-        // Register the PersonalSettings
-        $context->registerService(PersonalSettings::class, function ($c) {
-            return new PersonalSettings(
+        // Register the MemoriesAlertsSettings
+        $context->registerService(MemoriesAlertsSettings::class, function ($c) {
+            return new MemoriesAlertsSettings(
                 $c->get(SettingsController::class)
             );
         });
@@ -77,21 +76,19 @@ class Application extends App implements IBootstrap {
 
     public function boot(IBootContext $context): void {
         try {
-            // Register the background job
             $jobList = $context->getServerContainer()->get(IJobList::class);
             $jobList->add(SendDailyAlerts::class);
 
-            // Initialize logger
+            // Initialize logger and log during boot
             $logger = $context->getServerContainer()->get(LoggerInterface::class);
             $logger->info("Memories Alerts app initialized and booted", ['app' => self::APP_ID]);
             $this->logger = $logger;
 
-            // Register settings section and form
+            // Register the personal settings section and form
             $settingsManager = $context->getServerContainer()->get(ISettingsManager::class);
             $settingsManager->registerSection('personal', MemoriesAlertsSection::class);
-            $settingsManager->registerSetting('personal', PersonalSettings::class);
+            $settingsManager->registerSetting('personal', MemoriesAlertsSettings::class);
         } catch (\Exception $e) {
-            // Optional: Log errors for debugging
             file_put_contents('/tmp/memories_alerts_boot_error.log', "Boot error: " . $e->getMessage() . "\n", FILE_APPEND);
             throw $e;
         }
